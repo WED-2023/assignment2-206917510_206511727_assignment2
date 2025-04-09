@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Space Invaders Game</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header>
+      <img src="logo.png" alt="Game Logo" class="logo" />
+      <h1>Space Invaders</h1>
+    </header>
+
+    <!-- Menu -->
+    <menu>
+      <button onclick="showScreen('welcome')">Welcome</button>
+      <button onclick="showScreen('register')">Register</button>
+      <button onclick="showScreen('login')">Login</button>
+      <button onclick="showScreen('config')">Config</button>
+      <button onclick="document.getElementById('aboutDialog').showModal()">About</button>
+    </menu>
+
+    <!-- Main Screens -->
+    <main id="content">
+
+      <!-- Welcome Screen -->
+      <div id="welcome" class="screen">
+        <h2>Welcome to Space Invaders!</h2>
+        <p>Ido Badash | 206917510</p>
+        <p>Yehonatan Yamin | 206511727</p>
+        <p><a href="https://yourhomepage.com" target="_blank">Visit our homepage</a></p>
+        <button onclick="showScreen('register')">Register</button>
+        <button onclick="showScreen('login')">Login</button>
+      </div>
+
+      <!-- Register Screen -->
+      <div id="register" class="screen">
+        <h2>Register</h2>
+        <form id="registerForm" onsubmit="return validateRegisterForm()">
+          <input type="text" id="regUsername" placeholder="Username" required><br>
+          <input type="password" id="regPassword" placeholder="Password" required><br>
+          <input type="password" id="regConfirmPassword" placeholder="Confirm Password" required><br>
+          <input type="text" id="regFirstName" placeholder="First Name" required><br>
+          <input type="text" id="regLastName" placeholder="Last Name" required><br>
+          <input type="email" id="regEmail" placeholder="Email" required><br>
+          <label>Date of Birth:</label><br>
+          <select id="birthDay"></select>
+          <select id="birthMonth"></select>
+          <select id="birthYear"></select><br><br>
+          <button type="submit">Register</button>
+        </form>
+        <p id="registerError" style="color:red;"></p>
+      </div>
+
+      <!-- Login Screen -->
+      <div id="login" class="screen">
+        <h2>Login</h2>
+        <form id="loginForm" onsubmit="return validateLoginForm()">
+          <input type="text" id="loginUsername" placeholder="Username" required><br>
+          <input type="password" id="loginPassword" placeholder="Password" required><br>
+          <button type="submit">Login</button>
+        </form>
+        <p id="loginError" style="color:red;"></p>
+      </div>
+
+      <!-- Config Screen -->
+<div id="config" class="screen">
+    <h2>Game Configuration</h2>
+  
+    <div class="config-group">
+      <label for="shootKey">Choose Shoot Key:</label>
+      <select id="shootKey">
+        <option value=" ">Space</option>
+        <option value="a">A</option>
+        <option value="s">S</option>
+        <option value="d">D</option>
+      </select>
+    </div>
+  
+    <div class="config-group">
+      <label for="gameTime">Game Time (in minutes):</label>
+      <input type="number" id="gameTime" value="2" min="2" max="10">
+    </div>
+  
+    <div class="config-group">
+      <label for="playerColor">Player Ship Color:</label>
+      <select id="playerColor">
+        <option value="lime">Lime Green</option>
+        <option value="cyan">Cyan</option>
+        <option value="white">White</option>
+      </select>
+    </div>
+  
+    <div class="config-group">
+      <label for="enemyColor">Enemy Ship Color:</label>
+      <select id="enemyColor">
+        <option value="red">Red</option>
+        <option value="orange">Orange</option>
+        <option value="magenta">Magenta</option>
+      </select>
+    </div>
+  
+    <button onclick="applyConfigAndStart()">Start Game</button>
+  </div>
+  
+
+      <!-- Game Screen -->
+      <div id="game" class="screen">
+        <h2>Good luck, Captain!</h2>
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        <p>Score: <span id="score">0</span> | Lives: <span id="lives">3</span> | Time Left: <span id="timer">--</span></p>
+      </div>
+    </main>
+
+    <!-- About Modal -->
+    <dialog id="aboutDialog">
+      <button id="closeAbout" style="float:right;">❌</button>
+      <h2>About This Project</h2>
+      <p><strong>Submitted by:</strong> Ido Badash & Yehonatan Yamin</p>
+      <p><strong>Used Template:</strong> No</p>
+      <p><strong>Used jQuery Plugin:</strong> No</p>
+      <p><strong>Challenges:</strong> Validation, one-page logic, canvas game, modal logic</p>
+    </dialog>
+
+    <!-- Footer -->
+    <footer>
+      <p>© 2025 Space Invaders Project | Contact: badashi@post.bgu.ac.il</p>
+    </footer>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    const users = [{ username: "p", password: "testuser" }];
+    let shootKey = " ";
+    let gameDuration = 120;
+    let playerColor = "#00ff00";
+    let enemyColor = "#ff0000";
+
+    function showScreen(id) {
+      document.querySelectorAll(".screen").forEach(div => div.style.display = "none");
+      document.getElementById(id).style.display = "block";
+    }
+
+    showScreen("welcome");
+
+    // Birthday dropdowns
+    for (let i = 1; i <= 31; i++) document.getElementById("birthDay").innerHTML += `<option>${i}</option>`;
+    for (let i = 1; i <= 12; i++) document.getElementById("birthMonth").innerHTML += `<option>${i}</option>`;
+    for (let i = 2025; i >= 1900; i--) document.getElementById("birthYear").innerHTML += `<option>${i}</option>`;
+
+    function validateRegisterForm() {
+      const u = document.getElementById("regUsername").value.trim();
+      const p = document.getElementById("regPassword").value;
+      const cp = document.getElementById("regConfirmPassword").value;
+      const fn = document.getElementById("regFirstName").value.trim();
+      const ln = document.getElementById("regLastName").value.trim();
+      const email = document.getElementById("regEmail").value.trim();
+      const errorElem = document.getElementById("registerError");
+
+      if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(p)) return errorElem.textContent = "Weak password", false;
+      if (p !== cp) return errorElem.textContent = "Passwords do not match", false;
+      if (/\d/.test(fn) || /\d/.test(ln)) return errorElem.textContent = "Name can't contain digits", false;
+      if (!/^\S+@\S+\.\S+$/.test(email)) return errorElem.textContent = "Invalid email", false;
+
+      users.push({ username: u, password: p });
+      alert("Registration successful!");
+      showScreen("login");
+      return false;
+    }
+
+    function validateLoginForm() {
+      const u = document.getElementById("loginUsername").value.trim();
+      const p = document.getElementById("loginPassword").value;
+      const found = users.find(user => user.username === u && user.password === p);
+      if (found) {
+        alert("Login successful!");
+        showScreen("config");
+      } else {
+        document.getElementById("loginError").textContent = "Invalid username or password";
+      }
+      return false;
+    }
+
+    function applyConfigAndStart() {
+      shootKey = document.getElementById("shootKey").value;
+      gameDuration = Math.max(2, parseInt(document.getElementById("gameTime").value)) * 60;
+      playerColor = document.getElementById("playerColor").value;
+      enemyColor = document.getElementById("enemyColor").value;
+      showScreen("game");
+      initGame();
+    }
+
+    // Close About modal
+    document.getElementById("closeAbout").onclick = () => {
+      document.getElementById("aboutDialog").close();
+    };
+  </script>
+
+  <!-- Link to game logic -->
+  <script src="game.js"></script> <!-- Game logic must be saved in a separate file -->
+</body>
+</html>
