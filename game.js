@@ -162,7 +162,7 @@ function update() {
   document.getElementById("lives").textContent = lives;
 
   // Game end conditions
-  if (lives <= 0) {
+  if (lives == 0) {
     alert("Game Over!");
     document.location.reload();
   }
