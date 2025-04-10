@@ -67,44 +67,11 @@
       </div>
 
       <!-- Config Screen -->
-<div id="config" class="screen">
-    <h2>Game Configuration</h2>
-  
-    <div class="config-group">
-      <label for="shootKey">Choose Shoot Key:</label>
-      <select id="shootKey">
-        <option value=" ">Space</option>
-        <option value="a">A</option>
-        <option value="s">S</option>
-        <option value="d">D</option>
-      </select>
-    </div>
-  
-    <div class="config-group">
-      <label for="gameTime">Game Time (in minutes):</label>
-      <input type="number" id="gameTime" value="2" min="2" max="10">
-    </div>
-  
-    <div class="config-group">
-      <label for="playerColor">Player Ship Color:</label>
-      <select id="playerColor">
-        <option value="lime">Lime Green</option>
-        <option value="cyan">Cyan</option>
-        <option value="white">White</option>
-      </select>
-    </div>
-  
-    <div class="config-group">
-      <label for="enemyColor">Enemy Ship Color:</label>
-      <select id="enemyColor">
-        <option value="red">Red</option>
-        <option value="orange">Orange</option>
-        <option value="magenta">Magenta</option>
-      </select>
-    </div>
-  
-    <button onclick="applyConfigAndStart()">Start Game</button>
-  </div>
+      <div id="config" class="screen">
+        <h2>Game Configuration</h2>
+        <button class="start-button" onclick="applyConfigAndStart()">Start Game</button>
+      </div>
+
   
 
       <!-- Game Screen -->
@@ -184,19 +151,38 @@
       return false;
     }
 
-    function applyConfigAndStart() {
-      shootKey = document.getElementById("shootKey").value;
-      gameDuration = Math.max(2, parseInt(document.getElementById("gameTime").value)) * 60;
-      playerColor = document.getElementById("playerColor").value;
-      enemyColor = document.getElementById("enemyColor").value;
-      showScreen("game");
-      initGame();
-    }
 
     // Close About modal
     document.getElementById("closeAbout").onclick = () => {
       document.getElementById("aboutDialog").close();
     };
+    
+    function applyConfigAndStart() {
+    showScreen("game");    // show the game screen
+    initGame();            // start the game logic
+}
+
+
+function createEnemies() {
+  enemies = [];
+  for (let row = 0; row < ENEMY_ROWS; row++) {
+    for (let col = 0; col < ENEMY_COLS; col++) {
+      enemies.push({
+        x: 100 + col * ENEMY_SPACING_X,
+        y: 50 + row * ENEMY_SPACING_Y,
+        width: ENEMY_WIDTH,
+        height: ENEMY_HEIGHT,
+        row: row,
+        alive: true
+      });
+    }
+  }
+}
+
+updateEnemyShooting();
+document.getElementById("lives").textContent = lives;
+
+
   </script>
 
   <!-- Link to game logic -->
