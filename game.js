@@ -8,6 +8,7 @@ const MAX_SPEED_UPS = 4;
 const SPEED_MULTIPLIER = 1.2;
 let score = 0;
 let lives = 3;
+let gameInterval;
 
 const FRAME_RATE = 1000 / 60;
 const ENEMY_ROWS = 4;
@@ -17,7 +18,27 @@ const ENEMY_HEIGHT = 30;
 const ENEMY_SPACING_X = 100;
 const ENEMY_SPACING_Y = 60;
 
+function resetGameState() {
+  score = 0;
+  lives = 3;
+  enemySpeed = 0.8;
+  enemySpeedUps = 0;
+  bullets.length = 0;
+  enemyBullets.length = 0;
+  enemies.length = 0;
+  keys = {};
+  enemyDirection = 1;
+
+  document.getElementById("score").textContent = 0;
+  document.getElementById("lives").textContent = 3;
+  document.getElementById("speedLevel").textContent = "1";
+}
+
 function initGame() {
+  if (typeof gameInterval !== "undefined") {
+    clearInterval(gameInterval);
+  }
+
   canvas = document.getElementById("gameCanvas");
   ctx = canvas.getContext("2d");
 
@@ -30,7 +51,6 @@ function initGame() {
     cooldown: 0
   };
 
-  enemies = [];
   for (let row = 0; row < ENEMY_ROWS; row++) {
     for (let col = 0; col < ENEMY_COLS; col++) {
       enemies.push({
@@ -47,7 +67,7 @@ function initGame() {
   document.addEventListener("keydown", e => keys[e.key] = true);
   document.addEventListener("keyup", e => keys[e.key] = false);
 
-  setInterval(gameLoop, FRAME_RATE);
+  gameInterval = setInterval(gameLoop, FRAME_RATE);
 
   let speedUpInterval = setInterval(() => {
     if (enemySpeedUps < MAX_SPEED_UPS) {
@@ -87,17 +107,18 @@ function update() {
   }
   if (player.cooldown > 0) player.cooldown--;
 
-  // Update bullets
+  // Update player bullets
   bullets.forEach(bullet => bullet.y -= bullet.speed);
   bullets = bullets.filter(b => b.y + b.height > 0);
 
-  // Update enemy movement
+  // Enemy movement
   let edgeReached = false;
   enemies.forEach(e => {
     if (!e.alive) return;
     e.x += enemySpeed * enemyDirection;
     if (e.x <= 0 || e.x + e.width >= canvas.width) edgeReached = true;
   });
+
   if (edgeReached) {
     enemyDirection *= -1;
     enemies.forEach(e => e.y += 10);
@@ -122,7 +143,7 @@ function update() {
   });
   bullets = bullets.filter(b => !b.hit);
 
-  // Enemy bullet movement
+  // Enemy bullets
   enemyBullets.forEach(b => b.y += b.speed);
   enemyBullets = enemyBullets.filter(b => b.y < canvas.height);
 
@@ -143,7 +164,7 @@ function update() {
     }
   }
 
-  // Enemy bullet hits player
+  // Bullet hits player
   enemyBullets.forEach(bullet => {
     if (
       bullet.x < player.x + player.width &&
@@ -161,36 +182,60 @@ function update() {
   document.getElementById("score").textContent = score;
   document.getElementById("lives").textContent = lives;
 
-  // Game end conditions
-  if (lives == 0) {
-    alert("Game Over!");
-    document.location.reload();
+  // END GAME CONDITIONS
+
+  // 1. Player died
+  if (lives <= 0) {
+    endGame("You Lost!", score);
+    return;
   }
 
+  // 2. All enemies killed (max score = 250)
   if (enemies.every(e => !e.alive)) {
-    alert("You win!");
-    document.location.reload();
+    endGame("Champion!", score);
+    return;
+  }
+
+  // 3. Time is up (optional - if using timer)
+  if (typeof timeLeft !== "undefined" && timeLeft <= 0) {
+    if (score < 100) {
+      endGame("You can do better", score);
+    } else {
+      endGame("Winner!", score);
+    }
+    return;
   }
 }
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+  // Draw player
   ctx.fillStyle = "lime";
   ctx.fillRect(player.x, player.y, player.width, player.height);
 
+  // Draw enemies
   ctx.fillStyle = "red";
   enemies.forEach(e => {
     if (e.alive) ctx.fillRect(e.x, e.y, e.width, e.height);
   });
 
+  // Draw player bullets
   ctx.fillStyle = "white";
   bullets.forEach(b => {
     ctx.fillRect(b.x, b.y, b.width, b.height);
   });
 
+  // Draw enemy bullets
   ctx.fillStyle = "yellow";
   enemyBullets.forEach(b => {
     ctx.fillRect(b.x, b.y, b.width, b.height);
   });
+}
+
+function endGame(message, finalScore) {
+  clearInterval(gameInterval);
+  document.getElementById("endMessage").textContent = message;
+  document.getElementById("finalScore").textContent = `Your Score: ${finalScore}`;
+  showScreen("end");
 }
