@@ -1,4 +1,3 @@
-
 let canvas, ctx;
 let player, enemies = [], bullets = [], enemyBullets = [];
 let keys = {};
@@ -56,11 +55,9 @@ function initGame() {
       enemySpeedUps++;
       document.getElementById("speedLevel").textContent = enemySpeedUps + 1;
     } else {
-      clearInterval(speedUpInterval); // stop when max speed-ups reached
+      clearInterval(speedUpInterval);
     }
   }, 5000);
-  
-  
 }
 
 function gameLoop() {
@@ -71,11 +68,13 @@ function gameLoop() {
 function update() {
   const lowerBound = canvas.height * 0.6;
 
+  // Player movement
   if (keys["ArrowLeft"] && player.x > 0) player.x -= player.speed;
   if (keys["ArrowRight"] && player.x + player.width < canvas.width) player.x += player.speed;
   if (keys["ArrowUp"] && player.y > lowerBound) player.y -= player.speed;
   if (keys["ArrowDown"] && player.y + player.height < canvas.height) player.y += player.speed;
 
+  // Player shooting
   if (keys[" "] && player.cooldown <= 0) {
     bullets.push({
       x: player.x + player.width / 2 - 2,
@@ -88,21 +87,23 @@ function update() {
   }
   if (player.cooldown > 0) player.cooldown--;
 
+  // Update bullets
   bullets.forEach(bullet => bullet.y -= bullet.speed);
   bullets = bullets.filter(b => b.y + b.height > 0);
 
+  // Update enemy movement
   let edgeReached = false;
   enemies.forEach(e => {
     if (!e.alive) return;
     e.x += enemySpeed * enemyDirection;
     if (e.x <= 0 || e.x + e.width >= canvas.width) edgeReached = true;
   });
-
   if (edgeReached) {
     enemyDirection *= -1;
     enemies.forEach(e => e.y += 10);
   }
 
+  // Bullet-enemy collision and scoring
   bullets.forEach(bullet => {
     enemies.forEach(enemy => {
       if (
@@ -119,13 +120,58 @@ function update() {
       }
     });
   });
-
   bullets = bullets.filter(b => !b.hit);
+
+  // Enemy bullet movement
+  enemyBullets.forEach(b => b.y += b.speed);
+  enemyBullets = enemyBullets.filter(b => b.y < canvas.height);
+
+  // Enemy shooting logic
+  const triggerZone = canvas.height * 0.75;
+  const canShoot = enemyBullets.length === 0 || enemyBullets.every(b => b.y > triggerZone);
+  if (canShoot) {
+    const aliveEnemies = enemies.filter(e => e.alive);
+    if (aliveEnemies.length > 0) {
+      const shooter = aliveEnemies[Math.floor(Math.random() * aliveEnemies.length)];
+      enemyBullets.push({
+        x: shooter.x + shooter.width / 2 - 2,
+        y: shooter.y + shooter.height,
+        width: 4,
+        height: 10,
+        speed: 4
+      });
+    }
+  }
+
+  // Enemy bullet hits player
+  enemyBullets.forEach(bullet => {
+    if (
+      bullet.x < player.x + player.width &&
+      bullet.x + bullet.width > player.x &&
+      bullet.y < player.y + player.height &&
+      bullet.y + bullet.height > player.y
+    ) {
+      bullet.hit = true;
+      lives--;
+    }
+  });
+  enemyBullets = enemyBullets.filter(b => !b.hit);
+
+  // Update UI
   document.getElementById("score").textContent = score;
+  document.getElementById("lives").textContent = lives;
 
-  
+  // Game end conditions
+  if (lives <= 0) {
+    alert("Game Over!");
+    document.location.reload();
+  }
+
+  if (enemies.every(e => !e.alive)) {
+    alert("You win!");
+    document.location.reload();
+  }
 }
-
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
