@@ -1,4 +1,3 @@
-
 let canvas, ctx;
 let player, enemies = [], bullets = [], enemyBullets = [];
 let keys = {};
@@ -108,28 +107,81 @@ function update() {
   bullets = bullets.filter(b => !b.hit);
   document.getElementById("score").textContent = score;
 
-  
-}
+  // Move enemy bullets
+  enemyBullets.forEach(b => b.y += b.speed);
+  enemyBullets = enemyBullets.filter(b => b.y < canvas.height);
 
+  // Enemy shooting when last bullet reaches 3/4 screen
+  const triggerZone = canvas.height * 0.75;
+  const canShoot = enemyBullets.length === 0 || enemyBullets.every(b => b.y > triggerZone);
+
+  if (canShoot) {
+    const aliveEnemies = enemies.filter(e => e.alive);
+    if (aliveEnemies.length > 0) {
+      const shooter = aliveEnemies[Math.floor(Math.random() * aliveEnemies.length)];
+      enemyBullets.push({
+        x: shooter.x + shooter.width / 2 - 2,
+        y: shooter.y + shooter.height,
+        width: 4,
+        height: 10,
+        speed: 4
+      });
+    }
+  }
+
+  // Check collision with player
+  enemyBullets.forEach(bullet => {
+    if (
+      bullet.x < player.x + player.width &&
+      bullet.x + bullet.width > player.x &&
+      bullet.y < player.y + player.height &&
+      bullet.y + bullet.height > player.y
+    ) {
+      bullet.hit = true;
+      lives--;
+    }
+  });
+
+  enemyBullets = enemyBullets.filter(b => !b.hit);
+  document.getElementById("lives").textContent = lives;
+
+  // Game over check
+  if (lives <= 0) {
+    alert("Game Over!");
+    document.location.reload();
+  }
+
+  // Victory check
+  if (enemies.every(e => !e.alive)) {
+    alert("You win!");
+    document.location.reload();
+  }
+}
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+  // Draw player
   ctx.fillStyle = "lime";
   ctx.fillRect(player.x, player.y, player.width, player.height);
 
+  // Draw enemies
   ctx.fillStyle = "red";
   enemies.forEach(e => {
     if (e.alive) ctx.fillRect(e.x, e.y, e.width, e.height);
   });
 
+  // Draw player bullets
   ctx.fillStyle = "white";
   bullets.forEach(b => {
     ctx.fillRect(b.x, b.y, b.width, b.height);
   });
 
+  // Draw enemy bullets
   ctx.fillStyle = "yellow";
   enemyBullets.forEach(b => {
     ctx.fillRect(b.x, b.y, b.width, b.height);
   });
 }
+
+
