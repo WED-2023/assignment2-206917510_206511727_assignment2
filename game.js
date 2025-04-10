@@ -9,6 +9,9 @@ const SPEED_MULTIPLIER = 1.2;
 let score = 0;
 let lives = 3;
 let gameInterval;
+let countdownInterval;
+let currentUser = null;
+let userScores = {};
 
 const FRAME_RATE = 1000 / 60;
 const ENEMY_ROWS = 4;
@@ -33,9 +36,14 @@ function resetGameState() {
   document.getElementById("score").textContent = 0;
   document.getElementById("lives").textContent = 3;
   document.getElementById("speedLevel").textContent = "1";
-  document.getElementById("timer").textContent = timeLeft;
+  document.getElementById("timer").textContent = formatTime(gameDuration);
 }
 
+function formatTime(seconds) {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+}
 
 function initGame() {
   if (typeof gameInterval !== "undefined") {
@@ -83,11 +91,11 @@ function initGame() {
   }, 5000);
 
   timeLeft = gameDuration;
-  document.getElementById("timer").textContent = timeLeft;
+  document.getElementById("timer").textContent = formatTime(timeLeft);
 
   countdownInterval = setInterval(() => {
     timeLeft--;
-    document.getElementById("timer").textContent = timeLeft;
+    document.getElementById("timer").textContent = formatTime(timeLeft);
 
     if (timeLeft <= 0) {
       clearInterval(gameInterval);
@@ -109,13 +117,11 @@ function gameLoop() {
 function update() {
   const lowerBound = canvas.height * 0.6;
 
-  // Player movement
   if (keys["ArrowLeft"] && player.x > 0) player.x -= player.speed;
   if (keys["ArrowRight"] && player.x + player.width < canvas.width) player.x += player.speed;
   if (keys["ArrowUp"] && player.y > lowerBound) player.y -= player.speed;
   if (keys["ArrowDown"] && player.y + player.height < canvas.height) player.y += player.speed;
 
-  // Player shooting
   if (keys[" "] && player.cooldown <= 0) {
     bullets.push({
       x: player.x + player.width / 2 - 2,
@@ -128,11 +134,9 @@ function update() {
   }
   if (player.cooldown > 0) player.cooldown--;
 
-  // Update player bullets
   bullets.forEach(bullet => bullet.y -= bullet.speed);
   bullets = bullets.filter(b => b.y + b.height > 0);
 
-  // Enemy movement
   let edgeReached = false;
   enemies.forEach(e => {
     if (!e.alive) return;
@@ -145,7 +149,6 @@ function update() {
     enemies.forEach(e => e.y += 10);
   }
 
-  // Bullet-enemy collision and scoring
   bullets.forEach(bullet => {
     enemies.forEach(enemy => {
       if (
@@ -159,16 +162,15 @@ function update() {
         bullet.hit = true;
         const rowScore = [20, 15, 10, 5];
         score += rowScore[enemy.row];
+        document.getElementById("hitEnemySound").play();
       }
     });
   });
   bullets = bullets.filter(b => !b.hit);
 
-  // Enemy bullets
   enemyBullets.forEach(b => b.y += b.speed);
   enemyBullets = enemyBullets.filter(b => b.y < canvas.height);
 
-  // Enemy shooting logic
   const triggerZone = canvas.height * 0.75;
   const canShoot = enemyBullets.length === 0 || enemyBullets.every(b => b.y > triggerZone);
   if (canShoot) {
@@ -185,7 +187,6 @@ function update() {
     }
   }
 
-  // Bullet hits player
   enemyBullets.forEach(bullet => {
     if (
       bullet.x < player.x + player.width &&
@@ -195,40 +196,24 @@ function update() {
     ) {
       bullet.hit = true;
       lives--;
-  
-      // ✅ Reset player position to bottom center
+      document.getElementById("playerHitSound").play();
       player.x = Math.random() * (canvas.width - player.width);
       player.y = canvas.height * 0.6 + (canvas.height * 0.4 - player.height);
     }
   });
-  
+
   enemyBullets = enemyBullets.filter(b => !b.hit);
 
-  // Update UI
   document.getElementById("score").textContent = score;
   document.getElementById("lives").textContent = lives;
 
-  // END GAME CONDITIONS
-
-  // 1. Player died
   if (lives <= 0) {
     endGame("You Lost!", score);
     return;
   }
 
-  // 2. All enemies killed (max score = 250)
   if (enemies.every(e => !e.alive)) {
     endGame("Champion!", score);
-    return;
-  }
-
-  // 3. Time is up (optional - if using timer)
-  if (typeof timeLeft !== "undefined" && timeLeft <= 0) {
-    if (score < 100) {
-      endGame("You can do better", score);
-    } else {
-      endGame("Winner!", score);
-    }
     return;
   }
 }
@@ -236,17 +221,13 @@ function update() {
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Draw player
   ctx.fillStyle = "lime";
   ctx.fillRect(player.x, player.y, player.width, player.height);
 
-  // Draw enemies
   enemies.forEach(e => {
     if (e.alive) {
       ctx.fillStyle = "red";
       ctx.fillRect(e.x, e.y, e.width, e.height);
-  
-      // Draw score text
       const rowScore = [20, 15, 10, 5];
       ctx.fillStyle = "white";
       ctx.font = "14px Arial";
@@ -254,15 +235,12 @@ function draw() {
       ctx.fillText(rowScore[e.row], e.x + e.width / 2, e.y + e.height / 2 + 5);
     }
   });
-  
 
-  // Draw player bullets
   ctx.fillStyle = "white";
   bullets.forEach(b => {
     ctx.fillRect(b.x, b.y, b.width, b.height);
   });
 
-  // Draw enemy bullets
   ctx.fillStyle = "yellow";
   enemyBullets.forEach(b => {
     ctx.fillRect(b.x, b.y, b.width, b.height);
@@ -274,6 +252,19 @@ function endGame(message, finalScore) {
   clearInterval(countdownInterval);
   document.getElementById("endMessage").textContent = message;
   document.getElementById("finalScore").textContent = `Your Score: ${finalScore}`;
+
+  if (!userScores[currentUser]) userScores[currentUser] = [];
+  userScores[currentUser].push(finalScore);
+
+  const scores = userScores[currentUser].slice().sort((a, b) => b - a);
+  const rank = scores.indexOf(finalScore) + 1;
+
+  let table = `<h3>Your Scores</h3><ul>`;
+  scores.forEach((s, i) => {
+    table += `<li>${i + 1}. ${s} ${i + 1 === rank ? "(this game)" : ""}</li>`;
+  });
+  table += `</ul>`;
+
+  document.getElementById("finalScore").innerHTML += table;
   showScreen("end");
 }
-

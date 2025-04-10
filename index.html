@@ -10,7 +10,7 @@
   <div id="app">
     <!-- Header -->
     <header>
-      <img src="Logo.png" alt="Game Logo" class="logo" />
+      <img src="logo.png" alt="Game Logo" class="logo" />
       <h1>Space Invaders</h1>
     </header>
 
@@ -31,7 +31,7 @@
         <h2>Welcome to Space Invaders!</h2>
         <p>Ido Badash | 206917510</p>
         <p>Yehonatan Yamin | 206511727</p>
-        <p><a href="https://yourhomepage.com" target="_blank">Visit our homepage</a></p>
+        <p><a href="https://wed-2023.github.io/assignment2-206917510_206511727_assignment2/" target="_blank">Visit our homepage</a></p>
         <button onclick="showScreen('register')">Register</button>
         <button onclick="showScreen('login')">Login</button>
       </div>
@@ -76,7 +76,6 @@
       <div id="game" class="screen">
         <h2>Good luck, Captain!</h2>
 
-        <!-- Game Info at Top -->
         <div class="game-info">
           <span>Score: <span id="score">0</span></span>
           <span>Lives: <span id="lives">3</span></span>
@@ -85,8 +84,9 @@
         </div>
 
         <canvas id="gameCanvas" width="800" height="600"></canvas>
-        <button class="start-button" onclick="showScreen('config')">New Game</button>
 
+        <!-- New Game button in-game -->
+        <button class="start-button" onclick="showScreen('config')">New Game</button>
       </div>
 
       <!-- End Game Screen -->
@@ -94,7 +94,8 @@
         <h2 id="endMessage"></h2>
         <p id="finalScore"></p>
         <button onclick="showScreen('config')">New Game</button>
-        </div>
+      </div>
+
     </main>
 
     <!-- About Modal -->
@@ -113,7 +114,12 @@
     </footer>
   </div>
 
-  <!-- JavaScript -->
+  <!-- Sounds and Music --> //TODO: add sounds
+  <audio id="bgMusic" loop src="music.mp3"></audio>
+  <audio id="hitEnemySound" src="hit.mp3"></audio>
+  <audio id="playerHitSound" src="lose.mp3"></audio>
+
+  <!-- JavaScript Logic -->
   <script>
     const users = [{ username: "p", password: "testuser" }];
     let shootKey = " ";
@@ -124,6 +130,9 @@
     function showScreen(id) {
       document.querySelectorAll(".screen").forEach(div => div.style.display = "none");
       document.getElementById(id).style.display = "block";
+      if (id !== "game") {
+        document.getElementById("bgMusic").pause();
+      }
     }
 
     showScreen("welcome");
@@ -170,11 +179,12 @@
     };
 
     function applyConfigAndStart() {
-  resetGameState();      // ✅ Reset all game variables (score, bullets, etc.)
-  showScreen("game");    // ✅ Switch to game screen
-  initGame();            // ✅ Start fresh game loop and logic
-}
-
+      resetGameState();
+      showScreen("game");
+      initGame();
+      document.getElementById("bgMusic").currentTime = 0;
+      document.getElementById("bgMusic").play();
+    }
   </script>
 
   <script src="game.js"></script>
