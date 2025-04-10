@@ -3,7 +3,10 @@ let canvas, ctx;
 let player, enemies = [], bullets = [], enemyBullets = [];
 let keys = {};
 let enemyDirection = 1;
-let enemySpeed = 0.5;
+let enemySpeed = 0.8;
+let enemySpeedUps = 0;
+const MAX_SPEED_UPS = 4;
+const SPEED_MULTIPLIER = 1.2;
 let score = 0;
 let lives = 3;
 
@@ -46,6 +49,18 @@ function initGame() {
   document.addEventListener("keyup", e => keys[e.key] = false);
 
   setInterval(gameLoop, FRAME_RATE);
+
+  let speedUpInterval = setInterval(() => {
+    if (enemySpeedUps < MAX_SPEED_UPS) {
+      enemySpeed *= SPEED_MULTIPLIER;
+      enemySpeedUps++;
+      document.getElementById("speedLevel").textContent = enemySpeedUps + 1;
+    } else {
+      clearInterval(speedUpInterval); // stop when max speed-ups reached
+    }
+  }, 5000);
+  
+  
 }
 
 function gameLoop() {

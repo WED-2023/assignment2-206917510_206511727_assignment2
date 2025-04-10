@@ -1,165 +1,164 @@
 /* Reset and Layout */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  body {
-    font-family: Arial, sans-serif;
-    background: #0e0e0e;
-    color: white;
-    min-width: 1366px;
-    min-height: 768px;
-    display: flex;
-    justify-content: center;
-  }
-  
-  #app {
-    width: 100%;
-    max-width: 1366px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  /* Header */
-  header {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .logo {
-    height: 80px;
-    margin-bottom: 10px;
-  }
-  
-  /* Menu */
-  menu {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-  
-  menu button {
-    padding: 10px 20px;
-    font-size: 16px;
-    background: #222;
-    color: white;
-    border: 1px solid #555;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-  
-  menu button:hover {
-    background: #444;
-  }
-  
-  /* Main Content */
-  main {
-    width: 100%;
-    max-width: 800px;
-    text-align: center;
-  }
-  
-  .screen {
-    display: none;
-  }
-  
-  .screen input,
-  .screen select,
-  .screen button {
-    margin: 10px 0;
-    padding: 10px;
-    width: 80%;
-    max-width: 400px;
-    font-size: 16px;
-    border: 1px solid #aaa;
-    border-radius: 5px;
-  }
-  
-  .screen h2 {
-    margin-bottom: 20px;
-  }
-  
-  /* Footer */
-  footer {
-    margin-top: 40px;
-    font-size: 14px;
-    color: #aaa;
-    text-align: center;
-  }
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-  /* Clean Config Styling */
-#config {
+body {
+  font-family: Arial, sans-serif;
+  background: #0e0e0e;
+  color: white;
+  min-width: 1366px;
+  min-height: 768px;
+  display: flex;
+  justify-content: center;
+}
+
+#app {
+  width: 100%;
+  max-width: 1366px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+/* Header */
+header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.logo {
+  height: 80px;
+  margin-bottom: 10px;
+}
+
+/* Menu */
+menu {
+  display: flex;
   justify-content: center;
-  padding: 40px 0;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+menu button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background: #222;
+  color: white;
+  border: 1px solid #555;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+menu button:hover {
+  background: #444;
+}
+
+/* Main Content */
+main {
+  width: 100%;
+  max-width: 800px;
+  text-align: center;
+}
+
+.screen {
+  display: none;
+}
+
+.screen input,
+.screen select,
+.screen button {
+  margin: 10px 0;
+  padding: 10px;
+  width: 80%;
+  max-width: 400px;
+  font-size: 16px;
+  border: 1px solid #aaa;
+  border-radius: 5px;
+}
+
+.screen h2 {
+  margin-bottom: 20px;
+}
+
+/* Footer */
+footer {
+  margin-top: 40px;
+  font-size: 14px;
+  color: #aaa;
+  text-align: center;
+}
+
+/* Clean Config Styling */
+#config {
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+padding: 40px 0;
 }
 
 #config h2 {
-  margin-bottom: 30px;
-  font-size: 28px;
+margin-bottom: 30px;
+font-size: 28px;
 }
 
 .start-button {
-  padding: 12px 30px;
-  font-size: 18px;
-  background-color: #228B22;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.3s ease;
+padding: 12px 30px;
+font-size: 18px;
+background-color: #228B22;
+color: white;
+border: none;
+border-radius: 8px;
+cursor: pointer;
+transition: background 0.3s ease;
 }
 
 .start-button:hover {
-  background-color: #2ecc71;
+background-color: #2ecc71;
 }
 
-  
 
-  /* Modal Dialog */
-  dialog {
-    border: none;
-    border-radius: 10px;
-    padding: 20px;
-    max-width: 500px;
-    width: 90%;
-    background-color: #222;
-    color: #fff;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-  
-  dialog::backdrop {
-    background: rgba(0, 0, 0, 0.6);
-  }
-  
-  #closeAbout {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 20px;
-    cursor: pointer;
-    position: absolute;
-    right: 10px;
-    top: 10px;
-  }
-  
-  /* Canvas */
-  canvas {
-    background: black;
-    border: 2px solid white;
-    margin-bottom: 10px;
-  }
-  
 
-  
+/* Modal Dialog */
+dialog {
+  border: none;
+  border-radius: 10px;
+  padding: 20px;
+  max-width: 500px;
+  width: 90%;
+  background-color: #222;
+  color: #fff;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+#closeAbout {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+
+/* Canvas */
+canvas {
+  background: black;
+  border: 2px solid white;
+  margin-bottom: 10px;
+}
+
+

@@ -72,13 +72,19 @@
         <button class="start-button" onclick="applyConfigAndStart()">Start Game</button>
       </div>
 
-  
-
       <!-- Game Screen -->
       <div id="game" class="screen">
         <h2>Good luck, Captain!</h2>
+
+        <!-- Game Info at Top -->
+        <div class="game-info">
+          <span>Score: <span id="score">0</span></span>
+          <span>Lives: <span id="lives">3</span></span>
+          <span>Time Left: <span id="timer">--</span></span>
+          <span>Speed Level: <span id="speedLevel">1</span></span>
+        </div>
+
         <canvas id="gameCanvas" width="800" height="600"></canvas>
-        <p>Score: <span id="score">0</span> | Lives: <span id="lives">3</span> | Time Left: <span id="timer">--</span></p>
       </div>
     </main>
 
@@ -113,7 +119,6 @@
 
     showScreen("welcome");
 
-    // Birthday dropdowns
     for (let i = 1; i <= 31; i++) document.getElementById("birthDay").innerHTML += `<option>${i}</option>`;
     for (let i = 1; i <= 12; i++) document.getElementById("birthMonth").innerHTML += `<option>${i}</option>`;
     for (let i = 2025; i >= 1900; i--) document.getElementById("birthYear").innerHTML += `<option>${i}</option>`;
@@ -151,36 +156,16 @@
       return false;
     }
 
-
-    // Close About modal
     document.getElementById("closeAbout").onclick = () => {
       document.getElementById("aboutDialog").close();
     };
-    
+
     function applyConfigAndStart() {
-    showScreen("game");    // show the game screen
-    initGame();            // start the game logic
-}
-
-
-function createEnemies() {
-  enemies = [];
-  for (let row = 0; row < ENEMY_ROWS; row++) {
-    for (let col = 0; col < ENEMY_COLS; col++) {
-      enemies.push({
-        x: 100 + col * ENEMY_SPACING_X,
-        y: 50 + row * ENEMY_SPACING_Y,
-        width: ENEMY_WIDTH,
-        height: ENEMY_HEIGHT,
-        row: row,
-        alive: true
-      });
+      showScreen("game");
+      initGame();
     }
-  }
-}
   </script>
 
-  <!-- Link to game logic -->
-  <script src="game.js"></script> <!-- Game logic must be saved in a separate file -->
+  <script src="game.js"></script>
 </body>
 </html>
