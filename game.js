@@ -28,11 +28,14 @@ function resetGameState() {
   enemies.length = 0;
   keys = {};
   enemyDirection = 1;
+  timeLeft = gameDuration;
 
   document.getElementById("score").textContent = 0;
   document.getElementById("lives").textContent = 3;
   document.getElementById("speedLevel").textContent = "1";
+  document.getElementById("timer").textContent = timeLeft;
 }
+
 
 function initGame() {
   if (typeof gameInterval !== "undefined") {
@@ -78,6 +81,24 @@ function initGame() {
       clearInterval(speedUpInterval);
     }
   }, 5000);
+
+  timeLeft = gameDuration;
+  document.getElementById("timer").textContent = timeLeft;
+
+  countdownInterval = setInterval(() => {
+    timeLeft--;
+    document.getElementById("timer").textContent = timeLeft;
+
+    if (timeLeft <= 0) {
+      clearInterval(gameInterval);
+      clearInterval(countdownInterval);
+      if (score < 100) {
+        endGame("You can do better", score);
+      } else {
+        endGame("Winner!", score);
+      }
+    }
+  }, 1000);
 }
 
 function gameLoop() {
@@ -220,10 +241,20 @@ function draw() {
   ctx.fillRect(player.x, player.y, player.width, player.height);
 
   // Draw enemies
-  ctx.fillStyle = "red";
   enemies.forEach(e => {
-    if (e.alive) ctx.fillRect(e.x, e.y, e.width, e.height);
+    if (e.alive) {
+      ctx.fillStyle = "red";
+      ctx.fillRect(e.x, e.y, e.width, e.height);
+  
+      // Draw score text
+      const rowScore = [20, 15, 10, 5];
+      ctx.fillStyle = "white";
+      ctx.font = "14px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText(rowScore[e.row], e.x + e.width / 2, e.y + e.height / 2 + 5);
+    }
   });
+  
 
   // Draw player bullets
   ctx.fillStyle = "white";
@@ -240,7 +271,9 @@ function draw() {
 
 function endGame(message, finalScore) {
   clearInterval(gameInterval);
+  clearInterval(countdownInterval);
   document.getElementById("endMessage").textContent = message;
   document.getElementById("finalScore").textContent = `Your Score: ${finalScore}`;
   showScreen("end");
 }
+

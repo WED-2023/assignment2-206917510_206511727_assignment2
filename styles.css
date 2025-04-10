@@ -164,3 +164,39 @@ canvas {
 
 
 
+/* End Game Screen */
+#end {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 500px;
+  padding: 40px;
+}
+
+#end h2 {
+  font-size: 36px;
+  margin-bottom: 20px;
+  color: white;
+}
+
+#end p {
+  font-size: 24px;
+  margin-bottom: 30px;
+  color: #ccc;
+}
+
+#end button {
+  padding: 12px 30px;
+  font-size: 18px;
+  background-color: #228B22;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+#end button:hover {
+  background-color: #2ecc71;
+}
