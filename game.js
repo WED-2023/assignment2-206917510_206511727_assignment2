@@ -261,7 +261,7 @@ function endGame(message, finalScore) {
 
   let table = `<h3>Your Scores</h3><ul>`;
   scores.forEach((s, i) => {
-    table += `<li>${i + 1}. ${s} ${i + 1 === rank ? "(this game)" : ""}</li>`;
+    table += `${i + 1}. ${s} ${i + 1 === rank ? "(this game)" : ""}`;
   });
   table += `</ul>`;
 
