@@ -31,8 +31,9 @@ header {
 }
 
 .logo {
-  height: 80px;
+  height: 240px; /* Increased from 80px to give it more presence */
   margin-bottom: 10px;
+  border-radius: 12px;
 }
 
 /* Menu */
