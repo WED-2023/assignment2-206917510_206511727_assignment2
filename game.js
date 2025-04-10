@@ -174,8 +174,13 @@ function update() {
     ) {
       bullet.hit = true;
       lives--;
+  
+      // ✅ Reset player position to bottom center
+      player.x = Math.random() * (canvas.width - player.width);
+      player.y = canvas.height * 0.6 + (canvas.height * 0.4 - player.height);
     }
   });
+  
   enemyBullets = enemyBullets.filter(b => !b.hit);
 
   // Update UI
