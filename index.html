@@ -31,7 +31,7 @@
         <h2>Welcome to Space Invaders!</h2>
         <p>Ido Badash | 206917510</p>
         <p>Yehonatan Yamin | 206511727</p>
-        <p><a href="https://yourhomepage.com" target="_blank">Visit our homepage</a></p>
+        <p><a href="https://wed-2023.github.io/assignment2-206917510_206511727_assignment2/" target="_blank">Visit our homepage</a></p>
         <button onclick="showScreen('register')">Register</button>
         <button onclick="showScreen('login')">Login</button>
       </div>
@@ -72,14 +72,30 @@
         <button class="start-button" onclick="applyConfigAndStart()">Start Game</button>
       </div>
 
-  
-
       <!-- Game Screen -->
       <div id="game" class="screen">
         <h2>Good luck, Captain!</h2>
+
+        <div class="game-info">
+          <span>Score: <span id="score">0</span></span>
+          <span>Lives: <span id="lives">3</span></span>
+          <span>Time Left: <span id="timer">--</span></span>
+          <span>Speed Level: <span id="speedLevel">1</span></span>
+        </div>
+
         <canvas id="gameCanvas" width="800" height="600"></canvas>
-        <p>Score: <span id="score">0</span> | Lives: <span id="lives">3</span> | Time Left: <span id="timer">--</span></p>
+
+        <!-- New Game button in-game -->
+        <button class="start-button" onclick="showScreen('config')">New Game</button>
       </div>
+
+      <!-- End Game Screen -->
+      <div id="end" class="screen">
+        <h2 id="endMessage"></h2>
+        <p id="finalScore"></p>
+        <button onclick="showScreen('config')">New Game</button>
+      </div>
+
     </main>
 
     <!-- About Modal -->
@@ -98,7 +114,12 @@
     </footer>
   </div>
 
-  <!-- JavaScript -->
+  <!-- Sounds and Music --> //TODO: add sounds
+  <audio id="bgMusic" loop src="music.mp3"></audio>
+  <audio id="hitEnemySound" src="hit.mp3"></audio>
+  <audio id="playerHitSound" src="lose.mp3"></audio>
+
+  <!-- JavaScript Logic -->
   <script>
     const users = [{ username: "p", password: "testuser" }];
     let shootKey = " ";
@@ -109,11 +130,13 @@
     function showScreen(id) {
       document.querySelectorAll(".screen").forEach(div => div.style.display = "none");
       document.getElementById(id).style.display = "block";
+      if (id !== "game") {
+        document.getElementById("bgMusic").pause();
+      }
     }
 
     showScreen("welcome");
 
-    // Birthday dropdowns
     for (let i = 1; i <= 31; i++) document.getElementById("birthDay").innerHTML += `<option>${i}</option>`;
     for (let i = 1; i <= 12; i++) document.getElementById("birthMonth").innerHTML += `<option>${i}</option>`;
     for (let i = 2025; i >= 1900; i--) document.getElementById("birthYear").innerHTML += `<option>${i}</option>`;
@@ -151,36 +174,19 @@
       return false;
     }
 
-
-    // Close About modal
     document.getElementById("closeAbout").onclick = () => {
       document.getElementById("aboutDialog").close();
     };
-    
+
     function applyConfigAndStart() {
-    showScreen("game");    // show the game screen
-    initGame();            // start the game logic
-}
-
-
-function createEnemies() {
-  enemies = [];
-  for (let row = 0; row < ENEMY_ROWS; row++) {
-    for (let col = 0; col < ENEMY_COLS; col++) {
-      enemies.push({
-        x: 100 + col * ENEMY_SPACING_X,
-        y: 50 + row * ENEMY_SPACING_Y,
-        width: ENEMY_WIDTH,
-        height: ENEMY_HEIGHT,
-        row: row,
-        alive: true
-      });
+      resetGameState();
+      showScreen("game");
+      initGame();
+      document.getElementById("bgMusic").currentTime = 0;
+      document.getElementById("bgMusic").play();
     }
-  }
-}
   </script>
 
-  <!-- Link to game logic -->
-  <script src="game.js"></script> <!-- Game logic must be saved in a separate file -->
+  <script src="game.js"></script>
 </body>
 </html>

@@ -2,9 +2,16 @@ let canvas, ctx;
 let player, enemies = [], bullets = [], enemyBullets = [];
 let keys = {};
 let enemyDirection = 1;
-let enemySpeed = 0.5;
+let enemySpeed = 0.8;
+let enemySpeedUps = 0;
+const MAX_SPEED_UPS = 4;
+const SPEED_MULTIPLIER = 1.2;
 let score = 0;
 let lives = 3;
+let gameInterval;
+let countdownInterval;
+let currentUser = null;
+let userScores = {};
 
 const FRAME_RATE = 1000 / 60;
 const ENEMY_ROWS = 4;
@@ -14,7 +21,35 @@ const ENEMY_HEIGHT = 30;
 const ENEMY_SPACING_X = 100;
 const ENEMY_SPACING_Y = 60;
 
+function resetGameState() {
+  score = 0;
+  lives = 3;
+  enemySpeed = 0.8;
+  enemySpeedUps = 0;
+  bullets.length = 0;
+  enemyBullets.length = 0;
+  enemies.length = 0;
+  keys = {};
+  enemyDirection = 1;
+  timeLeft = gameDuration;
+
+  document.getElementById("score").textContent = 0;
+  document.getElementById("lives").textContent = 3;
+  document.getElementById("speedLevel").textContent = "1";
+  document.getElementById("timer").textContent = formatTime(gameDuration);
+}
+
+function formatTime(seconds) {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+}
+
 function initGame() {
+  if (typeof gameInterval !== "undefined") {
+    clearInterval(gameInterval);
+  }
+
   canvas = document.getElementById("gameCanvas");
   ctx = canvas.getContext("2d");
 
@@ -27,7 +62,6 @@ function initGame() {
     cooldown: 0
   };
 
-  enemies = [];
   for (let row = 0; row < ENEMY_ROWS; row++) {
     for (let col = 0; col < ENEMY_COLS; col++) {
       enemies.push({
@@ -44,7 +78,35 @@ function initGame() {
   document.addEventListener("keydown", e => keys[e.key] = true);
   document.addEventListener("keyup", e => keys[e.key] = false);
 
-  setInterval(gameLoop, FRAME_RATE);
+  gameInterval = setInterval(gameLoop, FRAME_RATE);
+
+  let speedUpInterval = setInterval(() => {
+    if (enemySpeedUps < MAX_SPEED_UPS) {
+      enemySpeed *= SPEED_MULTIPLIER;
+      enemySpeedUps++;
+      document.getElementById("speedLevel").textContent = enemySpeedUps + 1;
+    } else {
+      clearInterval(speedUpInterval);
+    }
+  }, 5000);
+
+  timeLeft = gameDuration;
+  document.getElementById("timer").textContent = formatTime(timeLeft);
+
+  countdownInterval = setInterval(() => {
+    timeLeft--;
+    document.getElementById("timer").textContent = formatTime(timeLeft);
+
+    if (timeLeft <= 0) {
+      clearInterval(gameInterval);
+      clearInterval(countdownInterval);
+      if (score < 100) {
+        endGame("You can do better", score);
+      } else {
+        endGame("Winner!", score);
+      }
+    }
+  }, 1000);
 }
 
 function gameLoop() {
@@ -100,21 +162,17 @@ function update() {
         bullet.hit = true;
         const rowScore = [20, 15, 10, 5];
         score += rowScore[enemy.row];
+        document.getElementById("hitEnemySound").play();
       }
     });
   });
-
   bullets = bullets.filter(b => !b.hit);
-  document.getElementById("score").textContent = score;
 
-  // Move enemy bullets
   enemyBullets.forEach(b => b.y += b.speed);
   enemyBullets = enemyBullets.filter(b => b.y < canvas.height);
 
-  // Enemy shooting when last bullet reaches 3/4 screen
   const triggerZone = canvas.height * 0.75;
   const canShoot = enemyBullets.length === 0 || enemyBullets.every(b => b.y > triggerZone);
-
   if (canShoot) {
     const aliveEnemies = enemies.filter(e => e.alive);
     if (aliveEnemies.length > 0) {
@@ -129,7 +187,6 @@ function update() {
     }
   }
 
-  // Check collision with player
   enemyBullets.forEach(bullet => {
     if (
       bullet.x < player.x + player.width &&
@@ -139,22 +196,25 @@ function update() {
     ) {
       bullet.hit = true;
       lives--;
+      document.getElementById("playerHitSound").play();
+      player.x = Math.random() * (canvas.width - player.width);
+      player.y = canvas.height * 0.6 + (canvas.height * 0.4 - player.height);
     }
   });
 
   enemyBullets = enemyBullets.filter(b => !b.hit);
+
+  document.getElementById("score").textContent = score;
   document.getElementById("lives").textContent = lives;
 
-  // Game over check
   if (lives <= 0) {
-    alert("Game Over!");
-    document.location.reload();
+    endGame("You Lost!", score);
+    return;
   }
 
-  // Victory check
   if (enemies.every(e => !e.alive)) {
-    alert("You win!");
-    document.location.reload();
+    endGame("Champion!", score);
+    return;
   }
 }
 
@@ -165,10 +225,16 @@ function draw() {
   ctx.fillStyle = "lime";
   ctx.fillRect(player.x, player.y, player.width, player.height);
 
-  // Draw enemies
-  ctx.fillStyle = "red";
   enemies.forEach(e => {
-    if (e.alive) ctx.fillRect(e.x, e.y, e.width, e.height);
+    if (e.alive) {
+      ctx.fillStyle = "red";
+      ctx.fillRect(e.x, e.y, e.width, e.height);
+      const rowScore = [20, 15, 10, 5];
+      ctx.fillStyle = "white";
+      ctx.font = "14px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText(rowScore[e.row], e.x + e.width / 2, e.y + e.height / 2 + 5);
+    }
   });
 
   // Draw player bullets
@@ -184,4 +250,24 @@ function draw() {
   });
 }
 
+function endGame(message, finalScore) {
+  clearInterval(gameInterval);
+  clearInterval(countdownInterval);
+  document.getElementById("endMessage").textContent = message;
+  document.getElementById("finalScore").textContent = `Your Score: ${finalScore}`;
 
+  if (!userScores[currentUser]) userScores[currentUser] = [];
+  userScores[currentUser].push(finalScore);
+
+  const scores = userScores[currentUser].slice().sort((a, b) => b - a);
+  const rank = scores.indexOf(finalScore) + 1;
+
+  let table = `<h3>Your Scores</h3><ul>`;
+  scores.forEach((s, i) => {
+    table += `${i + 1}. ${s} ${i + 1 === rank ? "(this game)" : ""}`;
+  });
+  table += `</ul>`;
+
+  document.getElementById("finalScore").innerHTML += table;
+  showScreen("end");
+}
