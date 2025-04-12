@@ -206,3 +206,18 @@ canvas {
   list-style-type: none;
   padding-left: 0;
 }
+
+.start-button {
+  padding: 12px 30px;
+  font-size: 18px;
+  background-color: #228B22;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.start-button:hover {
+  background-color: #2ecc71;
+}

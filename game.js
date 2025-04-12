@@ -286,7 +286,7 @@ function endGame(message, finalScore) {
   let table = `<br><br><h3>${currentUser}'s Scores Table</h3><ul>`;
   scores.forEach((s, i) => {
     const isCurrent = s === finalScore && i === scores.lastIndexOf(finalScore);
-    table += `<li>${i + 1}. ${s} ${isCurrent ? "(this game)" : ""}</li>`;
+    table += `<li>${i + 1}. ${s} ${isCurrent ? "(current game)" : ""}</li>`;
   });
   table += `</ul>`;
 

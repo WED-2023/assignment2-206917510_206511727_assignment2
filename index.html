@@ -80,14 +80,15 @@
         <select id="playerColor">
           <option value="#00ff00">Green</option>
           <option value="#0000ff">Blue</option>
-          <option value="#ff69b4">Pink</option>
+          
+          <option value="#ffa500">Orange</option>
           <option value="#ffffff">White</option>
         </select><br>
 
         <label for="enemyColor">Enemy Color:</label><br>
         <select id="enemyColor">
           <option value="#ff0000">Red</option>
-          <option value="#ffff00">Yellow</option>
+          <option value="#ff69b4">Pink</option>
           <option value="#800080">Purple</option>
           <option value="#808080">Grey</option>
         </select><br><br>
@@ -109,7 +110,7 @@
         <canvas id="gameCanvas" width="800" height="600"></canvas>
 
         <!-- New Game button in-game -->
-        <button class="start-button" onclick="showScreen('config')">New Game</button>
+        <button class="start-button" onclick="startNewGame()">New Game</button>
       </div>
 
       <!-- End Game Screen -->
@@ -243,6 +244,15 @@
   document.getElementById("bgMusic").currentTime = 0;
   document.getElementById("bgMusic").play();
   }
+
+  function startNewGame() {
+  resetGameState();
+  showScreen("game");
+  initGame();
+  document.getElementById("bgMusic").currentTime = 0;
+  document.getElementById("bgMusic").play();
+}
+
   </script>
 
   <script src="game.js"></script>
