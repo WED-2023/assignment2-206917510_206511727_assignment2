@@ -19,7 +19,7 @@
       <button onclick="showScreen('welcome')">Welcome</button>
       <button onclick="showScreen('register')">Register</button>
       <button onclick="showScreen('login')">Login</button>
-      <button onclick="showScreen('config')">Config</button>
+      <!-- <button onclick="showScreen('config')">Config</button> -->
       <button onclick="document.getElementById('aboutDialog').showModal()">About</button>
     </menu>
 
@@ -69,6 +69,29 @@
       <!-- Config Screen -->
       <div id="config" class="screen">
         <h2>Game Configuration</h2>
+      
+        <label for="shootKey">Shoot Key (A–Z or Space):</label><br>
+        <input type="text" id="shootKey" maxlength="1" placeholder="e.g. Z or Space" required><br>
+      
+        <label for="gameTime">Game Duration (minutes):</label><br>
+        <input type="number" id="gameTime" min="2" max="10" value="2"><br>
+      
+        <label for="playerColor">Player Color:</label><br>
+        <select id="playerColor">
+          <option value="#00ff00">Green</option>
+          <option value="#0000ff">Blue</option>
+          <option value="#ff69b4">Pink</option>
+          <option value="#ffffff">White</option>
+        </select><br>
+
+        <label for="enemyColor">Enemy Color:</label><br>
+        <select id="enemyColor">
+          <option value="#ff0000">Red</option>
+          <option value="#ffff00">Yellow</option>
+          <option value="#800080">Purple</option>
+          <option value="#808080">Grey</option>
+        </select><br><br>
+
         <button class="start-button" onclick="applyConfigAndStart()">Start Game</button>
       </div>
 
@@ -152,7 +175,8 @@
 
       if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(p)) return errorElem.textContent = "Weak password", false;
       if (p !== cp) return errorElem.textContent = "Passwords do not match", false;
-      if (/\d/.test(fn) || /\d/.test(ln)) return errorElem.textContent = "Name can't contain digits", false;
+      if (/\d/.test(fn)) return errorElem.textContent = "First Name can't contain digits", false;
+      if (/\d/.test(ln)) return errorElem.textContent = "Last Name can't contain digits", false;
       if (!/^\S+@\S+\.\S+$/.test(email)) return errorElem.textContent = "Invalid email", false;
 
       users.push({ username: u, password: p });
@@ -166,6 +190,8 @@
       const p = document.getElementById("loginPassword").value;
       const found = users.find(user => user.username === u && user.password === p);
       if (found) {
+       currentUser = u;  // ✅ Set the current user
+        localStorage.setItem("currentUser", currentUser); // ✅ Store in localStorage
         alert("Login successful!");
         showScreen("config");
       } else {
@@ -174,17 +200,49 @@
       return false;
     }
 
-    document.getElementById("closeAbout").onclick = () => {
-      document.getElementById("aboutDialog").close();
-    };
+    const aboutDialog = document.getElementById("aboutDialog");
+    document.getElementById("closeAbout").onclick = () => aboutDialog.close();
 
-    function applyConfigAndStart() {
-      resetGameState();
-      showScreen("game");
-      initGame();
-      document.getElementById("bgMusic").currentTime = 0;
-      document.getElementById("bgMusic").play();
+  //Close on outside click
+    aboutDialog.addEventListener("click", (event) => {
+    const rect = aboutDialog.getBoundingClientRect();
+    const clickedOutside =
+      event.clientX < rect.left ||
+      event.clientX > rect.right ||
+      event.clientY < rect.top ||
+      event.clientY > rect.bottom;
+    if (clickedOutside) {
+      aboutDialog.close();
     }
+  });
+
+  function applyConfigAndStart() {
+  const keyInput = document.getElementById("shootKey").value.toUpperCase();
+  const timeInput = parseInt(document.getElementById("gameTime").value);
+  const colorPlayer = document.getElementById("playerColor").value;
+  const colorEnemy = document.getElementById("enemyColor").value;
+
+  if (!/^([A-Z]| )$/.test(keyInput)) {
+    alert("Please choose a valid shoot key (A-Z or Space).");
+    return;
+  }
+
+  if (isNaN(timeInput) || timeInput < 2) {
+    alert("Game time must be at least 2 minutes.");
+    return;
+  }
+  
+  shootKey = keyInput === " " ? " " : keyInput.toUpperCase();
+  gameDuration = timeInput * 60;
+  playerColor = colorPlayer;
+  enemyColor = colorEnemy;
+
+  resetGameState();
+  showScreen("game");
+  initGame();
+  document.getElementById("bgMusic").currentTime = 0;
+  document.getElementById("bgMusic").play();
+  }
   </script>
 
   <script src="game.js"></script>

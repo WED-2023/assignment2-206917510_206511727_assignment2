@@ -10,7 +10,11 @@ let score = 0;
 let lives = 3;
 let gameInterval;
 let countdownInterval;
-let currentUser = null;
+let currentUser = localStorage.getItem("currentUser") || null;
+let lastUserPlay = null;
+if (lastUserPlay == null){
+  lastUserPlay = currentUser
+}
 let userScores = {};
 
 const FRAME_RATE = 1000 / 60;
@@ -49,6 +53,10 @@ function initGame() {
   if (typeof gameInterval !== "undefined") {
     clearInterval(gameInterval);
   }
+  // stop the previos timer
+  if (typeof countdownInterval !== "undefined") {
+    clearInterval(countdownInterval);
+  }
 
   canvas = document.getElementById("gameCanvas");
   ctx = canvas.getContext("2d");
@@ -75,8 +83,15 @@ function initGame() {
     }
   }
 
-  document.addEventListener("keydown", e => keys[e.key] = true);
-  document.addEventListener("keyup", e => keys[e.key] = false);
+  document.addEventListener("keydown", e => {
+    const key = /^[a-zA-Z]$/.test(e.key) ? e.key.toUpperCase() : e.key;
+    keys[key] = true;
+  });
+  
+  document.addEventListener("keyup", e => {
+    const key = /^[a-zA-Z]$/.test(e.key) ? e.key.toUpperCase() : e.key;
+    keys[key] = false;
+  });
 
   gameInterval = setInterval(gameLoop, FRAME_RATE);
 
@@ -97,7 +112,7 @@ function initGame() {
     timeLeft--;
     document.getElementById("timer").textContent = formatTime(timeLeft);
 
-    if (timeLeft <= 0) {
+    if (timeLeft == 0) {
       clearInterval(gameInterval);
       clearInterval(countdownInterval);
       if (score < 100) {
@@ -122,7 +137,7 @@ function update() {
   if (keys["ArrowUp"] && player.y > lowerBound) player.y -= player.speed;
   if (keys["ArrowDown"] && player.y + player.height < canvas.height) player.y += player.speed;
 
-  if (keys[" "] && player.cooldown <= 0) {
+  if (keys[shootKey] && player.cooldown <= 0) {
     bullets.push({
       x: player.x + player.width / 2 - 2,
       y: player.y,
@@ -208,6 +223,7 @@ function update() {
   document.getElementById("lives").textContent = lives;
 
   if (lives <= 0) {
+    lives = 3
     endGame("You Lost!", score);
     return;
   }
@@ -222,12 +238,12 @@ function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // Draw player
-  ctx.fillStyle = "lime";
+  ctx.fillStyle = playerColor;
   ctx.fillRect(player.x, player.y, player.width, player.height);
 
   enemies.forEach(e => {
     if (e.alive) {
-      ctx.fillStyle = "red";
+      ctx.fillStyle = enemyColor;
       ctx.fillRect(e.x, e.y, e.width, e.height);
       const rowScore = [20, 15, 10, 5];
       ctx.fillStyle = "white";
@@ -256,15 +272,21 @@ function endGame(message, finalScore) {
   document.getElementById("endMessage").textContent = message;
   document.getElementById("finalScore").textContent = `Your Score: ${finalScore}`;
 
+  if (lastUserPlay !== currentUser) {
+    userScores = {};
+    userScores[currentUser] = [];
+    lastUserPlay = currentUser;
+  }
+
   if (!userScores[currentUser]) userScores[currentUser] = [];
   userScores[currentUser].push(finalScore);
 
   const scores = userScores[currentUser].slice().sort((a, b) => b - a);
-  const rank = scores.indexOf(finalScore) + 1;
 
-  let table = `<h3>Your Scores</h3><ul>`;
+  let table = `<br><br><h3>${currentUser}'s Scores Table</h3><ul>`;
   scores.forEach((s, i) => {
-    table += `${i + 1}. ${s} ${i + 1 === rank ? "(this game)" : ""}`;
+    const isCurrent = s === finalScore && i === scores.lastIndexOf(finalScore);
+    table += `<li>${i + 1}. ${s} ${isCurrent ? "(this game)" : ""}</li>`;
   });
   table += `</ul>`;
 

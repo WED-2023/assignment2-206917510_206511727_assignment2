@@ -201,3 +201,8 @@ canvas {
 #end button:hover {
   background-color: #2ecc71;
 }
+
+#finalScore ul {
+  list-style-type: none;
+  padding-left: 0;
+}
