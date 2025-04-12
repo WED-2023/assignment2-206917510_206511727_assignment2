@@ -143,9 +143,9 @@ function update() {
       y: player.y,
       width: 4,
       height: 10,
-      speed: 6
+      speed: 6,
     });
-    player.cooldown = 15;
+    player.cooldown = 33;
   }
   if (player.cooldown > 0) player.cooldown--;
 
@@ -197,7 +197,8 @@ function update() {
         y: shooter.y + shooter.height,
         width: 4,
         height: 10,
-        speed: 4
+        speed: 4,
+        
       });
     }
   }
