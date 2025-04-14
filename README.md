@@ -21,7 +21,7 @@ The project includes:
 ## Technologies Used:
 - HTML5
 - CSS3
-- JavaScript (Vanilla)
+- JavaScript - without any additional frameworks
 - Canvas API
 
 ## Features:
