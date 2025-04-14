@@ -129,6 +129,8 @@ function gameLoop() {
   draw();
 }
 
+
+
 function update() {
   const lowerBound = canvas.height * 0.6;
 
@@ -293,19 +295,5 @@ function endGame(message, finalScore) {
 
   document.getElementById("finalScore").innerHTML += table;
   showScreen("end");
-}
-
-function showScreen(id) {
-  document.querySelectorAll(".screen").forEach(div => div.style.display = "none");
-  document.getElementById(id).style.display = "block";
-
-  // Play music only during game
-  const bgMusic = document.getElementById("bgMusic");
-  if (id === "game") {
-    bgMusic.play();
-  } else {
-    bgMusic.pause();
-    bgMusic.currentTime = 0; // Optional: restart on next play
-  }
 }
 

@@ -173,7 +173,15 @@
       document.querySelectorAll(".screen").forEach(div => div.style.display = "none");
       document.getElementById(id).style.display = "block";
       if (id !== "game") {
-        document.getElementById("bgMusic").pause();
+        stopGame();
+      }
+      if (id === "login") {
+        document.getElementById("loginError").textContent = "";
+        document.getElementById("loginForm").reset(); // optional: clear inputs
+      }
+      if (id === "register") {
+        document.getElementById("registerError").textContent = "";
+        document.getElementById("registerForm").reset();
       }
     }
 
@@ -269,8 +277,23 @@
   initGame();
   document.getElementById("bgMusic").currentTime = 0;
   document.getElementById("bgMusic").play();
-}
+  }
 
+  function stopGame() {
+  if (typeof gameInterval !== "undefined") {
+    clearInterval(gameInterval);
+  }
+  // stop the previos timer
+  if (typeof countdownInterval !== "undefined") {
+    clearInterval(countdownInterval);
+  }
+  gameInterval = null;
+  countdownInterval = null;
+
+  // Pause music
+  document.getElementById("bgMusic").pause();
+  }
+  
   </script>
 
   <script src="game.js"></script>
