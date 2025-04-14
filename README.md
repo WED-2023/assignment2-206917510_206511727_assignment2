@@ -1,0 +1,32 @@
+# Space Invaders Game
+
+## Submitted By:
+- **Ido Badash** – ID: 206917510  
+- **Yehonatan Yamin** – ID: 206511727  
+
+## Live Website:
+https://wed-2023.github.io/assignment2-206917510_206511727_assignment2/
+
+## Project Overview:
+This project is a fully interactive **Space Invaders** game built as a one-page web application using **HTML, CSS, and JavaScript**.
+
+The project includes:
+- **User registration and login system** with form validation.
+- **Configurable game settings**: players can choose game duration, colors, and their shoot key.
+- **Canvas-based space shooting game** with increasing difficulty and real-time scoring.
+- **Audio effects** for enemy hits and player damage.
+- **Persistent user score history** (until user is changed).
+- **One-page logic**, modal window for About section, and instructions with visuals.
+
+## Technologies Used:
+- HTML5
+- CSS3
+- JavaScript (Vanilla)
+- Canvas API
+
+## Features:
+- One-page application structure
+- Sound and music support
+- Visual game instructions
+- Responsive layout
+- Edge-case handling
