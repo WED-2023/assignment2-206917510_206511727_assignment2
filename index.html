@@ -10,7 +10,7 @@
   <div id="app">
     <!-- Header -->
     <header>
-      <img src="logo.png" alt="Game Logo" class="logo" />
+      <img src="photos/Logo.png" alt="Game Logo" class="logo" />
       <h1>Space Invaders</h1>
     </header>
 
@@ -70,7 +70,7 @@
       <div id="config" class="screen">
         <h2>Game Configuration</h2>
       
-        <label for="shootKey">Shoot Key (A–Z or Space):</label><br>
+        <label for="shootKey">Shoot Key (Aa–Zz or Space):</label><br>
         <input type="text" id="shootKey" maxlength="1" placeholder="e.g. Z or Space" required><br>
       
         <label for="gameTime">Game Duration (minutes):</label><br>
@@ -80,7 +80,6 @@
         <select id="playerColor">
           <option value="#00ff00">Green</option>
           <option value="#0000ff">Blue</option>
-          
           <option value="#ffa500">Orange</option>
           <option value="#ffffff">White</option>
         </select><br>
@@ -135,6 +134,20 @@
         Due to a lack of experience, it becomes very challenging and exhausting.
         In addition there are endless edge cases, 
         and it's almost impossible to reach 100% bug-free. </p>
+        <br>
+        <h3>Game Instructions</h3>
+      <ul style="text-align: left; padding-left: 20px;">
+        <li>Use the arrow keys to move your spaceship.</li>
+        <li>
+          Press the selected shoot key (e.g. Space or A–Z) to fire bullets:
+          <span style="display:inline-block; width:4px; height:10px; background-color:white; margin:0 6px;"></span>
+        </li>
+        <li>Enemies move horizontally and shoot randomly.</li>
+        <li>Avoid enemy bullets<span style="display:inline-block; width:4px; height:10px; background-color:yellow; margin:0 6px;"></span>and eliminate all enemies to win.
+        </li>
+        <li>Your score depends on how many enemies you destroy.</li>
+        <li>You have 3 lives and limited time — make it count!</li>
+      </ul>
     </dialog>
 
     <!-- Footer -->
@@ -144,9 +157,9 @@
   </div>
 
   <!-- Sounds and Music -->
-  <audio id="bgMusic" loop src="music.mp3"></audio>
-  <audio id="hitEnemySound" src="hit.mp3"></audio>
-  <audio id="playerHitSound" src="lose.mp3"></audio>
+  <audio id="bgMusic" loop src="sound&music/music.mp3"></audio>
+  <audio id="hitEnemySound" src="sound&music/hit.mp3"></audio>
+  <audio id="playerHitSound" src="sound&music/lose.mp3"></audio>
 
   <!-- JavaScript Logic -->
   <script>
