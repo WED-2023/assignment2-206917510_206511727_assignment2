@@ -199,7 +199,7 @@ function update() {
         y: shooter.y + shooter.height,
         width: 4,
         height: 10,
-        speed: 4,
+        speed: 4 + (enemySpeedUps * 0.35),
         
       });
     }

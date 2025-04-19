@@ -128,7 +128,7 @@
       <p><strong>Submitted by:</strong> Ido Badash & Yehonatan Yamin</p>
       <p><strong>Used Template:</strong> No</p>
       <p><strong>Used jQuery Plugin:</strong> No</p>
-      <p><strong>Challenges:</strong> one-page logic&הodal logic:
+      <p><strong>Challenges:</strong> one-page logic&modal logic:
         The hardest part is when you try to plan the design in advance, 
         but along the way, you keep discovering new things that need to be synchronized. 
         Due to a lack of experience, it becomes very challenging and exhausting.
@@ -275,6 +275,7 @@
   resetGameState();
   showScreen("game");
   initGame();
+  document.activeElement.blur();
   document.getElementById("bgMusic").currentTime = 0;
   document.getElementById("bgMusic").play();
   }
