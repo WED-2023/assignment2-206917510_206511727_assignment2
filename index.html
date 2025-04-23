@@ -9,9 +9,10 @@
 <body>
   <div id="app">
     <!-- Header -->
-    <header>
-      <img src="photos/Logo.png" alt="Game Logo" class="logo" />
-      <h1>Space Invaders</h1>
+    <header style="display: flex; align-items: center; gap: 15px; justify-content: center;">
+      <img src="photos/Logo.png" alt="Game Logo" class="logo" style="width: 70px; height: auto;" />
+      <h1 style="margin: 0;">Space Invaders</h1>
+      <img src="photos/Logo.png" alt="Game Logo" class="logo" style="width: 70px; height: auto;" />
     </header>
 
     <!-- Menu -->
@@ -97,19 +98,23 @@
 
       <!-- Game Screen -->
       <div id="game" class="screen">
-        <h2>Good luck, Captain!</h2>
+        <h2 style="margin-bottom: 0;">Good luck, Captain!</h2>
 
         <div class="game-info">
           <span>Score: <span id="score">0</span></span>
           <span>Lives: <span id="lives">3</span></span>
           <span>Time Left: <span id="timer">--</span></span>
           <span>Speed Level: <span id="speedLevel">1</span></span>
+          <!-- New Game button in-game -->          
+          <button 
+            class="start-button" 
+            onclick="startNewGame()" 
+            style="width: 100px; padding: 6px 14px; font-size: 14px; border-radius: 6px; background-color: #228B22; color: white; border: none; cursor: pointer;">
+            New Game
+          </button>
         </div>
 
         <canvas id="gameCanvas" width="800" height="600"></canvas>
-
-        <!-- New Game button in-game -->
-        <button class="start-button" onclick="startNewGame()">New Game</button>
       </div>
 
       <!-- End Game Screen -->
@@ -145,8 +150,16 @@
         <li>Enemies move horizontally and shoot randomly.</li>
         <li>Avoid enemy bullets<span style="display:inline-block; width:4px; height:10px; background-color:yellow; margin:0 6px;"></span>and eliminate all enemies to win.
         </li>
-        <li>Your score depends on how many enemies you destroy.</li>
+        <li><strong>Score points</strong> based on enemy row:
+          <ul style="padding-left: 20px;">
+            <li><span style="margin-left: 10px; display: inline-block;">Bottom row – 5 points</span></li>
+            <li><span style="margin-left: 10px; display: inline-block;">Third row – 10 points</span></li>
+            <li><span style="margin-left: 10px; display: inline-block;">Second row – 15 points</span></li>
+            <li><span style="margin-left: 10px; display: inline-block;">Top row – 20 points</span></li>
+          </ul>
+        </li>       
         <li>You have 3 lives and limited time — make it count!</li>
+        <li>You can start a new game anytime by pressing <b>New Game</b> button.</li>
       </ul>
     </dialog>
 

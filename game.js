@@ -49,6 +49,8 @@ function formatTime(seconds) {
   return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
 }
 
+
+
 function initGame() {
   if (typeof gameInterval !== "undefined") {
     clearInterval(gameInterval);
@@ -123,6 +125,16 @@ function initGame() {
     }
   }, 1000);
 }
+
+// Prevent scrolling with arrow keys and spacebar during game
+window.addEventListener("keydown", function (e) {
+  const isGameScreen = document.getElementById("game").style.display === "block";
+  const isScrollingKey = ["ArrowUp", "ArrowDown", " "].includes(e.key);
+
+  if (isGameScreen && isScrollingKey) {
+    e.preventDefault();
+  }
+});
 
 function gameLoop() {
   update();
@@ -199,7 +211,7 @@ function update() {
         y: shooter.y + shooter.height,
         width: 4,
         height: 10,
-        speed: 4 + (enemySpeedUps * 0.35),
+        speed: 4 + (enemySpeedUps * 0.42),
         
       });
     }
